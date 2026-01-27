@@ -27,5 +27,9 @@ See:
 ## CardPanel docs
 If `cardpanel` is missing, regenerate docs from the widgetset repo using the stubbed `generate_docs.sh` script and then update `references/dhxpyt.html` and `references/dhxpyt/cardpanel.html`.
 
+## CardPanel root/container requirement
+`CardPanel` needs a real DOM element. If you pass `root="#tasks_cardpanel"` you must create that element first (e.g., with `attach_html`).
+Alternatively, pass the layout cell directly via `container=...`.
+
 ## Local example
 `assets/examples/dhxpyt_ui/testui.py` is a minimal layout + toolbar + grid sample.
