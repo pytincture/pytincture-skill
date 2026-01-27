@@ -24,5 +24,8 @@ See:
 - `references/dhxpyt/form.html` for `ComboConfig`
 - `references/dhxpyt/combobox.html` for `ComboboxConfig`
 
+## CardPanel docs
+If `cardpanel` is missing, regenerate docs from the widgetset repo using the stubbed `generate_docs.sh` script and then update `references/dhxpyt.html` and `references/dhxpyt/cardpanel.html`.
+
 ## Local example
 `assets/examples/dhxpyt_ui/testui.py` is a minimal layout + toolbar + grid sample.
