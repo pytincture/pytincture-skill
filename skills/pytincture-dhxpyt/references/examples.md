@@ -9,6 +9,7 @@ Path: `assets/examples/pytincture_app/`
 ## Minimal UI example (dhxpyt)
 Path: `assets/examples/dhxpyt_ui/`
 - `testui.py`: simple layout with toolbar + grid
+- Pattern: prefer `add_*` helpers on layouts/windows (for example, `add_grid`, `add_form`, `add_cardpanel`) instead of direct widget instantiation.
 
 ## Standalone runtime demo
 Path: `assets/standalone/`

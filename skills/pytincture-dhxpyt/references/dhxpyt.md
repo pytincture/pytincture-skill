@@ -31,5 +31,10 @@ If `cardpanel` is missing, regenerate docs from the widgetset repo using the stu
 `CardPanel` needs a real DOM element. Prefer the layout/window helpers (for example, `layout.add_cardpanel(...)`) so the widget is mounted into a valid cell automatically.
 If you pass `root="#tasks_cardpanel"` you must create that element first (e.g., with `attach_html`). Alternatively, pass the layout cell directly via `container=...`.
 
+Example pattern:
+```python
+panel = layout.add_cardpanel(id="tasks_cardpanel", panel_config=panel_config)
+```
+
 ## Local example
 `assets/examples/dhxpyt_ui/testui.py` is a minimal layout + toolbar + grid sample.
