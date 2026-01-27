@@ -29,8 +29,9 @@ Reference details:
 ## Task 2: Build a dhxpyt UI (widgetset-focused)
 1. Subclass `MainWindow`.
 2. Create a layout with `add_layout` and attach widgets to layout cells.
-3. Configure widgets using `*Config` classes or dicts.
-4. Wire event handlers via `.on_*` methods on components (for example, `toolbar.on_click(...)`).
+3. Prefer widget helpers on the layout or window (for example, `add_cardpanel`, `add_grid`, `add_form`) instead of instantiating widgets directly; this guarantees a valid container is created.
+4. Configure widgets using `*Config` classes or dicts.
+5. Wire event handlers via `.on_*` methods on components (for example, `toolbar.on_click(...)`).
 
 Start from:
 - `assets/examples/dhxpyt_ui/testui.py`
