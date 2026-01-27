@@ -33,8 +33,11 @@ If you pass `root="#tasks_cardpanel"` you must create that element first (e.g., 
 
 Example pattern:
 ```python
-panel = layout.add_cardpanel(id="tasks_cardpanel", panel_config=panel_config)
+panel = layout.add_cardpanel(id="tasks_cardpanel", cardpanel_config=panel_config)
 ```
+
+## Tabbar add_cardpanel argument name
+Use `cardpanel_config=` (not `panel_config=`) with `tabbar.add_cardpanel(...)`.
 
 ## Local example
 `assets/examples/dhxpyt_ui/testui.py` is a minimal layout + toolbar + grid sample.
