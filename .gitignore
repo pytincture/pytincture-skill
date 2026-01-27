@@ -1,0 +1,22 @@
+# OS / editor
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env/
+
+# Build / dist
+/dist/
+
+# Node
+node_modules/
+
+# Logs
+*.log

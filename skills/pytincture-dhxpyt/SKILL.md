@@ -1,0 +1,62 @@
+---
+name: pytincture-dhxpyt
+description: Build or modify apps that use the pytincture framework and the dhxpyt widgetset. Use when asked to create pytincture services, add backend-for-frontend (BFF) classes/policies, generate UI layouts with dhxpyt widgets (grid, form, toolbar, sidebar, tabbar, etc.), or embed pytincture.js for browser-only Python UI scripts.
+---
+
+# Pytincture + DhxPyt
+
+## Overview
+Build Python-driven UIs with dhxpyt and run them either as full pytincture services or as browser-only apps using the pytincture runtime.
+
+## Quick start decisions
+- Choose **service mode** when you need backend routes, BFF calls, auth, or full app delivery.
+- Choose **standalone mode** when you want a single HTML page that runs Python in the browser with no server.
+- Use bundled examples to bootstrap: see `references/examples.md`.
+
+## Task 1: Build a pytincture app (backend + app delivery)
+1. Create a module with a `MainWindow` subclass and build UI via dhxpyt.
+2. Add any BFF data classes with `@backend_for_frontend` and optional `@bff_policy`.
+3. Call `launch_service(modules_folder=".")` so the server can discover your classes.
+4. Run the module and open the generated route (typically `/ClassName`).
+
+Start from:
+- `assets/examples/pytincture_app/py_ui.py`
+- `assets/examples/pytincture_app/py_ui_data.py`
+
+Reference details:
+- Read `references/pytincture.md` for BFF policies and service setup.
+
+## Task 2: Build a dhxpyt UI (widgetset-focused)
+1. Subclass `MainWindow`.
+2. Create a layout with `add_layout` and attach widgets to layout cells.
+3. Configure widgets using `*Config` classes or dicts.
+4. Wire event handlers via `.on_*` or `.click` methods on components.
+
+Start from:
+- `assets/examples/dhxpyt_ui/testui.py`
+
+Reference details:
+- Read `references/dhxpyt.md` for usage patterns.
+- Load `references/dhxpyt.html` when you need full widget API specifics.
+
+## Task 3: Use pytincture.js in a standalone HTML page
+1. Use `assets/standalone/index.html` as the base template.
+2. Embed Python in `<script type="text/python">`.
+3. Add optional wheels to `#micropip-libs`.
+4. Set `window.pytinctureAutoStartConfig` if you need custom widgetlib or Pyodide URLs.
+
+Reference details:
+- Read `references/pytincture-runtime.md` for runtime configuration and manual start.
+
+## Resources
+### references/
+- `references/pytincture.md`: service mode + BFF policy patterns
+- `references/pytincture-runtime.md`: standalone runtime setup
+- `references/dhxpyt.md`: dhxpyt usage overview
+- `references/dhxpyt.html`: full dhxpyt API docs
+- `references/examples.md`: index of bundled example assets
+
+### assets/
+- `assets/examples/pytincture_app/`: full app example
+- `assets/examples/dhxpyt_ui/`: minimal dhxpyt UI example
+- `assets/standalone/`: browser-only runtime template and JS
