@@ -47,6 +47,7 @@ Reference details:
 
 Troubleshooting:
 - If the runtime tries to fetch a wheel like `dhxpyt-99.99.99-py3-none-any.whl`, it means a placeholder filename was used. Replace it with `"dhxpyt"` in `#micropip-libs` or supply a real wheel file in your appcode.
+- If you see `ComboConfig.__init__() got an unexpected keyword argument 'options'`, use `data` instead of `options` for combo items (see `references/dhxpyt/form.html`).
 
 Reference details:
 - Read `references/pytincture-runtime.md` for runtime configuration and manual start.
