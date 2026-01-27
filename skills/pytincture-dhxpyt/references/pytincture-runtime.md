@@ -52,5 +52,16 @@ runTinctureApp({
 });
 ```
 
+## Avoid missing wheel errors
+If you see a 404 for a wheel like `dhxpyt-99.99.99-py3-none-any.whl`, the runtime is trying to load a file that doesn’t exist.
+
+- Prefer installing from PyPI by listing `"dhxpyt"` in `#micropip-libs`:
+  ```html
+  <script type="text/json" id="micropip-libs">
+    ["dhxpyt"]
+  </script>
+  ```
+- If you want a local wheel, place it under your app’s `/appcode` folder and reference the exact filename.
+
 ## Local runtime bundle
 If you want a local, non-CDN build, use the files in `assets/standalone/`.

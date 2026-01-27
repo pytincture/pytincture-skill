@@ -49,7 +49,7 @@ class testui(MainWindow):
         )
 
         # Attach a signal to the main toolbar to handle clicks
-        self.maintb.click(self.menu_clicked)
+        self.maintb.on_click(self.menu_clicked)
 
         # Create a grid and add it to the bottom row
         self.grid = self.sub_layout.add_grid(

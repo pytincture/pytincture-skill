@@ -15,7 +15,7 @@ See `references/dhxpyt.html` for the API documentation.
 ## Patterns
 - Build UIs by subclassing `MainWindow` and calling `add_layout`, then attach widgets to cells.
 - Widgets are configured via `*Config` objects (or dict configs) depending on module.
-- Event handlers are usually registered through `.on_*` or `.click`-style methods on components.
+- Event handlers are usually registered through `.on_*` methods on components (for example, `toolbar.on_click(...)`).
 
 ## Local example
 `assets/examples/dhxpyt_ui/testui.py` is a minimal layout + toolbar + grid sample.

@@ -30,7 +30,7 @@ Reference details:
 1. Subclass `MainWindow`.
 2. Create a layout with `add_layout` and attach widgets to layout cells.
 3. Configure widgets using `*Config` classes or dicts.
-4. Wire event handlers via `.on_*` or `.click` methods on components.
+4. Wire event handlers via `.on_*` methods on components (for example, `toolbar.on_click(...)`).
 
 Start from:
 - `assets/examples/dhxpyt_ui/testui.py`
@@ -44,6 +44,9 @@ Reference details:
 2. Embed Python in `<script type="text/python">`.
 3. Add optional wheels to `#micropip-libs`.
 4. Set `window.pytinctureAutoStartConfig` if you need custom widgetlib or Pyodide URLs.
+
+Troubleshooting:
+- If the runtime tries to fetch a wheel like `dhxpyt-99.99.99-py3-none-any.whl`, it means a placeholder filename was used. Replace it with `"dhxpyt"` in `#micropip-libs` or supply a real wheel file in your appcode.
 
 Reference details:
 - Read `references/pytincture-runtime.md` for runtime configuration and manual start.
