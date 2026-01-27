@@ -33,6 +33,8 @@ Reference details:
 4. Configure widgets using `*Config` classes or dicts.
 5. Wire event handlers via `.on_*` methods on components (for example, `toolbar.on_click(...)`).
 
+Avoid: `CardPanel(..., root="#id")` unless you have already created that DOM node with `attach_html`.
+
 Start from:
 - `assets/examples/dhxpyt_ui/testui.py`
 

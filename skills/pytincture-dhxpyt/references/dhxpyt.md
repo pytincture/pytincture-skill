@@ -36,6 +36,11 @@ Example pattern:
 panel = layout.add_cardpanel(id="tasks_cardpanel", cardpanel_config=panel_config)
 ```
 
+Anti-pattern (fails if the DOM node doesn't exist yet):
+```python
+CardPanel(panel_config, root="#tasks_cardpanel")
+```
+
 ## Tabbar add_cardpanel argument name
 Use `cardpanel_config=` (not `panel_config=`) with `tabbar.add_cardpanel(...)`.
 
