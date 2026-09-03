@@ -1,13 +1,20 @@
+"""
+Minimal dhxpyt UI: layout + toolbar + grid.
+
+Note the entrypoint pattern: subclass MainWindow and implement `load_ui()`.
+Do NOT override `__init__` to call `load_ui()` yourself -- dhxpyt's
+`LoadUICaller` metaclass already calls it once the instance is constructed
+(see dhxpyt/layout/layout.py). Calling it again builds the whole UI twice.
+"""
 import sys
-from dhxpyt.layout import MainWindow, LayoutConfig
+
+from dhxpyt.layout import MainWindow
+
 
 class testui(MainWindow):
-    def __init__(self):
-        super().__init__()
-        self.set_theme("light")
-        self.load_ui()
-
     def load_ui(self):
+        self.set_theme("light")
+
         # Create a column based layout and add it to the mainwindow
         # left column will be for a sidebar
         # right column will be for a toolbar and a grid
@@ -20,11 +27,6 @@ class testui(MainWindow):
                 ]
             }
         )
-
-        # Create a sidebar and add it to the left column
-        #self.sbmain = self.base_layout.add_sidebar(id="left", data=[])  # You'll need to define sidebar data
-        # Have the sidebar start off in collapsed mode
-        #self.sbmain.collapse()
 
         # Create a layout for the right column
         # top row will be for a toolbar
@@ -44,8 +46,13 @@ class testui(MainWindow):
         # Create a toolbar and add it to the top row
         self.maintb = self.sub_layout.add_toolbar(
             id="top",
-            toolbar_config={"css": "dhx_toolbar--text_color_white"},
-            #data=[]  # You'll need to define toolbar data
+            toolbar_config={
+                "css": "dhx_toolbar--text_color_white",
+                "data": [
+                    {"id": "file", "type": "button", "value": "File"},
+                    {"id": "help", "type": "button", "value": "Help"},
+                ],
+            },
         )
 
         # Attach a signal to the main toolbar to handle clicks
@@ -71,6 +78,11 @@ class testui(MainWindow):
                 ]
             }
         )
+
+    def menu_clicked(self, id, event):
+        """Handle toolbar button clicks."""
+        print(f"toolbar item clicked: {id}")
+
 
 if __name__ == "__main__" and sys.platform != "emscripten":
     from pytincture import launch_service

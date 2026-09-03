@@ -13,7 +13,8 @@ __pycache__/
 .env/
 
 # Build / dist
-/dist/
+# NOTE: dist/*.skill is intentionally committed (see scripts/package.sh),
+# so it is not ignored here.
 
 # Node
 node_modules/
