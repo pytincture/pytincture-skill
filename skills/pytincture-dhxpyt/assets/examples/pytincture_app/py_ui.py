@@ -2,35 +2,37 @@
 Example application using MainWindow subclass and layout management
 with a collapsible sidebar, content area, a Tabbar containing a grid, calendar, and form.
 """
+import asyncio
 import json
 import sys
 
+import js
+
+import widget  # declares __widgetset__/__version__ for the backend
 from dhxpyt.layout import MainWindow
-from dhxpyt.toolbar import ButtonConfig, ToolbarConfig, SeparatorConfig  # Direct imports
-from dhxpyt.sidebar import NavItemConfig, SeparatorConfig, SpacerConfig, SidebarConfig  # Direct imports
+from dhxpyt.chart import BarChartConfig
+from dhxpyt.toolbar import ButtonConfig, ToolbarConfig, SeparatorConfig as ToolbarSeparatorConfig
+from dhxpyt.sidebar import NavItemConfig, SeparatorConfig as SidebarSeparatorConfig, SpacerConfig, SidebarConfig
 from dhxpyt.grid import GridConfig, GridColumnConfig  # Grid and GridColumnConfig
 from dhxpyt.calendar import CalendarConfig
 from dhxpyt.form import FormConfig, InputConfig, DatepickerConfig  # Importing form-related classes
 from dhxpyt.layout import LayoutConfig, CellConfig  # Direct imports
 from dhxpyt.tabbar import TabbarConfig, TabConfig  # Tabbar-related imports
-from pyodide.ffi import create_proxy  # To handle JS signals
-
+from py_ui_data import py_ui_data  # server-side data, reached over the BFF
 
 
 class py_ui(MainWindow):
-    def __init__(self):
-        super().__init__()
+    # Do NOT define __init__ to call load_ui(): dhxpyt's LoadUICaller metaclass
+    # calls load_ui() automatically after construction. Calling it here as well
+    # builds the entire UI twice.
+    def load_ui(self):
         self.set_theme("dark")
         self.sidebar_collapsed = False  # Track the sidebar state
-        self.load_ui()
-
-    def load_ui(self):
-        from py_ui_data import py_ui_data  # Assuming this is pulling the book data
         # Add a toolbar to the pre-existing 'mainwindow_header'
         toolbar_buttons = [
             ButtonConfig(id="file", value="File", icon="mdi mdi-car-brake-hold"),
             ButtonConfig(id="edit", value="Edit", icon="mdi mdi-pencil"),
-            SeparatorConfig(id="sep1"),
+            ToolbarSeparatorConfig(id="sep1"),
             ButtonConfig(id="help", value="Help", icon="mdi mdi-help-circle")
         ]
         toolbar_config = ToolbarConfig(data=toolbar_buttons)
@@ -54,7 +56,7 @@ class py_ui(MainWindow):
             NavItemConfig(id="dashboard", value="Dashboard", icon="mdi mdi-view-dashboard"),
             NavItemConfig(id="statistics", value="Statistics", icon="mdi mdi-chart-line"),
             NavItemConfig(id="reports", value="Reports", icon="mdi mdi-file-chart"),
-            SeparatorConfig(),  # Separator
+            SidebarSeparatorConfig(),  # Separator
             NavItemConfig(id="posts", value="Posts", icon="mdi mdi-square-edit-outline", items=[
                 NavItemConfig(id="addPost", value="New Post", icon="mdi mdi-plus"),
                 NavItemConfig(id="allPost", value="Posts", icon="mdi mdi-view-list"),
@@ -105,7 +107,7 @@ class py_ui(MainWindow):
         # Add the HTML content to the top row (content_message)
         self.content_layout.attach_html(id="content_message", html="<h1 style='margin-left: 10px;'>Book Details and Ratings</h1>")
 
-        # Tabbar configuration with three tabs: Grid, Book Ratings Chart, Form, Calendar
+        # Tabbar configuration with four tabs: Grid, Book Ratings Chart, Form, Calendar
         tabbar_config = TabbarConfig(
             views=[
                 TabConfig(id="tab1", tab="Grid View"),
@@ -133,17 +135,18 @@ class py_ui(MainWindow):
             GridColumnConfig(width=200, id="publisher", header=[{"text": "Publisher"}])
         ]
 
-        # Fetching data from py_ui_data
-        data = py_ui_data().dataset()
-
-        # Grid configuration with columns
-        grid_config = GridConfig(
-            columns=grid_columns,
-            data=data
-        )
+        # Grid configuration with columns. The rows arrive from the BFF after
+        # load_ui() returns, so no data= here.
+        grid_config = GridConfig(columns=grid_columns)
 
         # Attach the grid to the first tab (tab1) using tabbar.add_grid
         self.book_grid = self.tabbar.add_grid(id="tab1", grid_config=grid_config)
+
+        # load_ui() is synchronous, so schedule the BFF call instead of
+        # blocking on it. This fills the grid (tab1) and builds the chart
+        # (tab2) once the dataset arrives.
+        self.book_chart = None
+        asyncio.ensure_future(self._load_dataset())
 
         # Calendar configuration
         calendar_config = CalendarConfig(width="50%")
@@ -168,6 +171,49 @@ class py_ui(MainWindow):
         # Attach the form to the third tab (tab3) using tabbar.add_form
         self.book_form = self.tabbar.add_form(id="tab3", form_config=form_config)
 
+    async def _load_dataset(self):
+        """Fetch the dataset over the BFF and populate tab1 and tab2."""
+        # asyncio.ensure_future() swallows exceptions from this coroutine, so
+        # report them explicitly rather than failing silently.
+        try:
+            # The generated browser stub exposes both dataset() -- a blocking
+            # XHR, deprecated through 1.x -- and dataset_async(). Only the
+            # latter is awaitable, and it is what new browser code should use.
+            raw = await py_ui_data().dataset_async()
+            data = json.loads(raw) if isinstance(raw, str) else raw
+        except Exception:
+            import traceback
+            js.console.error("dataset load failed: " + traceback.format_exc())
+            return
+
+        # dhxpyt's Grid wrapper has no data API; reach the underlying widget.
+        self.book_grid.grid.data.parse(js.JSON.parse(json.dumps(data)))
+
+        # Ten most-rated books, with titles trimmed so the axis stays legible.
+        top_rated = sorted(
+            data, key=lambda book: book.get("ratings_count") or 0, reverse=True
+        )[:10]
+        chart_rows = [
+            {
+                "title": (book.get("title") or "")[:24],
+                "average_rating": book.get("average_rating") or 0,
+            }
+            for book in top_rated
+        ]
+
+        # Chart.__init__ hands config.to_dict() to dhx through JSON, so data=
+        # is delivered correctly; building the widget here keeps one code path.
+        self.book_chart = self.tabbar.add_chart(
+            id="tab2",
+            chart_config=BarChartConfig(
+                series=[
+                    {"id": "rating", "value": "average_rating", "fill": "#4a90d9"}
+                ],
+                scales={"bottom": {"text": "title"}, "left": {"max": 5}},
+                data=chart_rows,
+            ),
+        )
+
     def handle_toolbar_click(self, id, event):
         """Handle toolbar button clicks."""
         if id == "hamburger":
@@ -189,27 +235,48 @@ if __name__ == "__main__" and sys.platform != "emscripten":
     from pytincture import launch_service
     from pytincture.backend.app import set_bff_policy_hook
 
+    # The hook is written out here rather than imported from service.py on
+    # purpose: appcode packaging walks every import in this file, including
+    # the ones under this guard, so a local `import policy` would ship the
+    # server-side module to the browser.
+    TRUSTED_INTERNAL_HOSTS = {"127.0.0.1", "::1"}
 
-    def register_policy_hook():
-        def policy_hook(user, policy, class_name, function_name, **kwargs):
-            print(user, class_name, function_name)
-            required_roles = set(policy.get("roles", []))
-            user_roles = set(user.get("roles", []))
+    def policy_hook(user, policy, class_name, function_name, **kwargs):
+        """
+        Runs before every @backend_for_frontend call that carries @bff_policy.
 
-            if required_roles and not (required_roles & user_roles):
-                raise #HTTPException(status_code=403, detail="Forbidden")
+        Pytincture has already enforced the claims it recognises -- issuer,
+        tenant, provider, auth_provider, application, operation and
+        role/roles, the last requiring ALL of the declared roles. The hook
+        handles what a declaration cannot express and receives the policy keys
+        Pytincture does not know.
 
-            # `user` contains the OAuth/SAML/login metadata you already store.
-            # kwargs["request"] is the FastAPI Request for IP/tenant checks, etc.
+        The contract is a return value, not an exception:
+          True or None -> allow
+          False        -> deny (Pytincture raises 403)
+          anything else-> RuntimeError (fail closed)
 
-        set_bff_policy_hook(policy_hook)
+        `user` holds the OAuth/SAML/login claims; kwargs["request"] is the
+        FastAPI Request, for IP/tenant checks and the like.
+        """
+        if policy.get("internal"):
+            request = kwargs.get("request")
+            client_host = request.client.host if request is not None and request.client else ""
+            return client_host in TRUSTED_INTERNAL_HOSTS
+        return True
 
-    register_policy_hook()
+    # Registering the hook is mandatory: a @bff_policy export with no hook
+    # makes the service fail closed at startup.
+    set_bff_policy_hook(policy_hook)
 
     launch_service(
         env_vars={
-          "ENABLE_USER_LOGIN": "true",
-          "ALLOWED_EMAILS": "schapman1974@gmail.com",
-          "SECRET_KEY": "super-secret",   # required for session signing
+            "ENABLE_USER_LOGIN": "true",
+            "ALLOWED_EMAILS": "you@example.com",
+            "SECRET_KEY": "change-me",  # required for session signing
+            # Login alone grants no roles. Claims configured here are what
+            # make a roles-bearing export such as
+            # py_ui_data.reconciliation_dataset() reachable.
+            "AUTH_USER_CLAIMS": '[{"email": "you@example.com", "roles": ["manager"]}]',
         }
-      )
+    )

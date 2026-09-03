@@ -1,72 +1,69 @@
 <!DOCTYPE html>
+<!--
+  Standalone browser mode: ordinary static HTML, no Pytincture service, no BFF,
+  no server authentication, no private Python.
+
+  Prepare the verified local runtime once, on the machine that builds the site:
+
+      python -m pip install 'pytincture==1.0.0rc5'
+      python -m pytincture.assets ./frontend
+
+  Then serve the directory over HTTP(S) -- not file:// --  e.g.:
+
+      python3 -m http.server 8000
+
+  Everything in this page is visible to the user. Never embed credentials and
+  never treat browser Python as a trusted authorization layer; use service mode
+  for that.
+-->
 <html>
-<head>
-    <script type="text/javascript">
-        window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.28.9/full/';
+  <head>
+    <meta charset="utf-8">
+    <title>Pytincture standalone app</title>
+    <script>
+      window.pytinctureAutoStartConfig = {
+        mode: "inline",
+        entrypoint: "Demo",
+        // Exact pin required. dhxpyt 0.9.18 is the release Pytincture 1.0 locks.
+        widgetlib: "dhxpyt==0.9.18",
+        onLifecycleEvent: event => console.debug(event.stage, event.type)
+      };
+      // window.pytinctureAutoStartDisabled = true;  // to call runTinctureApp() yourself
     </script>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.28.0/full/pyodide.js"></script>
-    <script src="***APPLICATION***/frontend/pytincture.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.css?v=7.4.47" media="all" rel="stylesheet" type="text/css">
-</head>
-<body>
-    <script>runTinctureApp("***APPLICATION***", "***WIDGETSET***", "***ENTRYPOINT***");</script>
+    <script src="./frontend/dist/pytincture.min.js"></script>
+  </head>
+  <body>
     <div id="maindiv" style="width: 100%; height: 100vh;"></div>
-    <div id="cookie-banner" style="
-    display: none; /* Hide by default; show when needed */
-    position: fixed; 
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    padding: 1rem;
-    z-index: 9999;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-    background: #f8f9fa;
-    font-family: 'Arial', sans-serif;
-    border-top: 2px solid #ccc;
-  ">
-    <div style="max-width: 960px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-      <p style="
-        margin: 0;
-        font-size: 1rem;
-        color: #444;
-        line-height: 1.4;
-        flex: 1 1 auto;
-      ">
-        We use cookies to enhance your experience. By clicking “Accept,” 
-        you consent to the use of cookies. Otherwise, click “Reject.”
-      </p>
-      <div style="flex: 0 0 auto; margin-top: 1rem;">
-        <button id="reject-btn" style="
-          background-color: #ccc;
-          color: #333;
-          border: none;
-          border-radius: 4px;
-          padding: 0.5rem 1rem;
-          margin-right: 0.5rem;
-          cursor: pointer;
-          font-size: 0.9rem;
-          transition: background-color 0.3s;
-        "
-        onmouseover="this.style.backgroundColor='#bbb'"
-        onmouseout="this.style.backgroundColor='#ccc'">
-          Reject
-        </button>
-        <button id="accept-btn" style="
-          background-color: #007bff;
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          padding: 0.5rem 1rem;
-          cursor: pointer;
-          font-size: 0.9rem;
-          transition: background-color 0.3s;
-        "
-        onmouseover="this.style.backgroundColor='#0056b3'"
-        onmouseout="this.style.backgroundColor='#007bff'">
-          Accept
-        </button>
-      </div>
-    </div>
-  </div>
-</body>
+
+    <!--
+      Every entry must be an exact `name==version` pin, or a wheel URL ending in
+      #sha256=<64 hex>. Automatic dependency resolution is disabled, so list
+      every required package. Packages must be pure Python or ship a
+      Pyodide-compatible wheel.
+    -->
+    <script type="text/json" id="micropip-libs">
+      ["faker==37.0.0"]
+    </script>
+
+    <script type="text/python">
+from dhxpyt.layout import MainWindow
+
+
+class Demo(MainWindow):
+    # Implement load_ui() only. dhxpyt's LoadUICaller metaclass calls it once
+    # the class is constructed; calling it from __init__ builds the UI twice.
+    def load_ui(self):
+        self.set_theme("dark")
+        self.layout = self.add_layout(
+            layout_config={
+                "type": "line",
+                "rows": [
+                    {"id": "top", "height": "auto"},
+                    {"id": "body", "height": "100%"},
+                ],
+            }
+        )
+        self.layout.attach_html(id="top", html="<h1>Hello from Pytincture</h1>")
+    </script>
+  </body>
 </html>
