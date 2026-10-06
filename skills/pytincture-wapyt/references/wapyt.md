@@ -276,8 +276,10 @@ buttons overlap.
   instead of silently falling back to `download_via_anchor`.
 
 ### CardPanel / ResourceBoard
-- `CardPanelConfig` defaults `title="Data Sources"` plus a lineage-tracking
-  description. Always set `title` and `description`.
+- `CardPanelConfig` copy is generic by default: empty `title` and
+  `description` (an empty description hides its row), "Search…" and "Add".
+  Set `add_button_text` and `search_placeholder` to name what the panel
+  holds; `searchable=False` hides the search box.
 - `CardPanel.register_template(name, factory)` registers a custom card
   renderer; descriptor dicts are the no-JS alternative.
 
