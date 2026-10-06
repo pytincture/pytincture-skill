@@ -50,8 +50,8 @@ CardPanelConfig(
 Python wrapper for the custom CardPanel widget.
 
 ```python
-register_template(cls, name: str, factory: Any) -> None
-get_template(cls, name: str) -> Any
+register_template(name: str, factory: Any) -> None
+get_template(name: str) -> Any
 on_search(handler: Callable[[str], Any]) -> None
 on_add(handler: Callable[[], Any]) -> None
 on_view(handler: Callable[[Any], Any]) -> None

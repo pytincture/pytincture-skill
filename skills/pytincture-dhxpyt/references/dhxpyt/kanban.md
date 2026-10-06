@@ -92,8 +92,8 @@ KanbanLaneConfig(
 Python wrapper around the custom Kanban widget (mirrors the structure used
 
 ```python
-register_card_template(cls, name: str, factory: Any) -> None
-register_column_template(cls, name: str, factory: Any) -> None
+register_card_template(name: str, factory: Any) -> None
+register_column_template(name: str, factory: Any) -> None
 on_card_click(handler: Callable[[Dict[str, Any]], Any]) -> None
 on_card_move(handler: Callable[[Dict[str, Any]], Any]) -> None
 on_card_create(handler: Callable[[Dict[str, Any]], Any]) -> None
@@ -104,11 +104,11 @@ reload(config: KanbanConfig) -> None
 set_columns(columns: Iterable[Union[KanbanColumnConfig, Dict[str, Any]]]) -> None
 set_cards(cards: Iterable[Union[KanbanCardConfig, Dict[str, Any]]]) -> None
 set_lanes(lanes: Iterable[Union[KanbanLaneConfig, Dict[str, Any]]]) -> None
-add_card(card: Union[KanbanCardConfig, Dict[str, Any]], index: Optional[int] = None) -> str
+add_card(card: Union[KanbanCardConfig, Dict[str, Any]], *, index: Optional[int] = None) -> str
 update_card(card_id: str, **updates) -> None
 remove_card(card_id: str) -> None
-move_card(card_id: str, to_column: str, lane: Optional[str] = None, index: Optional[int] = None) -> None
-add_column(column: Union[KanbanColumnConfig, Dict[str, Any]], index: Optional[int] = None) -> str
+move_card(card_id: str, *, to_column: str, lane: Optional[str] = None, index: Optional[int] = None) -> None
+add_column(column: Union[KanbanColumnConfig, Dict[str, Any]], *, index: Optional[int] = None) -> str
 update_column(column_id: str, **updates) -> None
 remove_column(column_id: str) -> None
 set_theme(theme: str) -> None
