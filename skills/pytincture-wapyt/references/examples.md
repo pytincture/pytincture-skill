@@ -34,4 +34,3 @@ What to copy from it:
   `dispose_on_close=True` and closed explicitly on success and cancel.
 - The BFF revalidates every field and returns `{"ok": False, "field", "error"}`,
   which the browser shows with `form.set_error(...)`.
-- A CSS rule sets the base font, which wapyt leaves unset.

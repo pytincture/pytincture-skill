@@ -174,14 +174,19 @@ buttons overlap.
 - `MainWindow.set_theme("dark")` sets `data-wapyt-theme` on `<html>`; layout,
   tabs, forms, modals and card panels follow it. `Chat` has its own
   `ChatConfig(theme=...)` / `chat.set_theme()`.
-- **wapyt sets no base font.** Layout headers and the modal title fall back to
-  the browser's serif default. Inject a rule:
+- **Typeface: override `--wapyt-font-family`.** Layouts and modals take their
+  font from that custom property (a system-UI stack by default), not from
+  `body`, so a `body { font-family }` rule does not reach them. Set the
+  property once on `:root`:
 
   ```python
   style = js.document.createElement("style")
-  style.textContent = "body, .wapyt-modal { font-family: system-ui, sans-serif; }"
+  style.textContent = ':root { --wapyt-font-family: "Inter", system-ui, sans-serif; }'
   js.document.head.appendChild(style)
   ```
+
+  Some parts (forms, tables, trees, menus, Chat, CardPanel) still set their
+  own `system-ui` stack and ignore the property.
 
 - Colour tokens live in `wapyt.css` as `--wapyt-*` custom properties.
 

@@ -39,12 +39,6 @@ APP_ENTRYPOINT = "Inventory"
 
 ALL = "all"
 
-# wapyt sets no base font: layout headers and the modal title fall back to the
-# browser's serif default unless the app styles them.
-CSS = """
-body, .wapyt-modal { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-"""
-
 
 def spawn(coro, label: str):
     """asyncio.ensure_future swallows exceptions; report them instead."""
@@ -79,10 +73,6 @@ class Inventory(MainWindow):
     # construction, and defining both builds the UI twice.
     def load_ui(self) -> None:
         self.set_theme("dark")
-        style = js.document.createElement("style")
-        style.textContent = CSS
-        js.document.head.appendChild(style)
-
         self.category = ALL
         self.categories: list[dict] = []
 

@@ -88,7 +88,7 @@ exact config fields — do not load them all.
 | Modal buttons clipped below the fold | `ModalConfig(height=...)` is honest; body content scrolls inside it. Make it taller. |
 | Hidden modals pile up in the DOM | `hide()` keeps the overlay. Use `ModalConfig(dispose_on_close=True)` and `close()` for per-use dialogs. |
 | Form vanished after `set_content` | `set_content` replaces the body. Mount into `modal.body` instead. |
-| Headers and modal title render in serif | wapyt sets no base font. Style `body` and `.wapyt-modal`. |
+| A `body { font-family }` rule doesn't change the UI | Layouts and modals read `--wapyt-font-family`. Override that on `:root`. |
 | Button text overlapping / icons show as words | A ligature icon font. Use MDI classes (`mdi-pencil`); never add a Material Icons/Symbols `<link>`. |
 | `if el is None:` never fires | JS `null` arrives as `JsNull`, which is not `None`. Test truthiness. |
 | Exception in an async handler vanishes | `ensure_future` swallows it. Wrap the coroutine and `js.console.error(traceback.format_exc())`. |
