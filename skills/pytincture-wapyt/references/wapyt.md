@@ -157,9 +157,11 @@ For DOM listeners you add yourself, wrap callbacks with
 
 ## Pyodide FFI
 
-- JS `null` crosses as **`JsNull`, which is not `None`**, including inside
-  most event payloads (Tree's cleared `on_select` `id`; Toolbar maps it to `None`). `if el is None:` never
-  fires. Test truthiness: `if not el:`.
+- wapyt event payloads and getters return real `None` for JS `null`
+  (wapyt#29). **Your own JS calls don't:** `js.document.getElementById("x")`
+  returns `JsNull` when missing, which is falsy but `is None` is False, so
+  `if el is None:` never fires. Test truthiness (`if not el:`) or use
+  `wapyt._runtime.to_plain(value)`.
 - A missing JS property raises `AttributeError` instead of returning
   `undefined`; use `getAttribute()` / `hasattr()` rather than
   `element.dataset.foo`.
