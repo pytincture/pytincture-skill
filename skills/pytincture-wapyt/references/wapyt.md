@@ -302,8 +302,9 @@ buttons overlap.
 - Per-row permissions: `show_at(event.clientX, event.clientY, context=row,
   hide=[ids], disable=[ids])` from your own `contextmenu` listener
   (`event.preventDefault()` first).
-- Tree / DataTable / Terminal keep their own `TreeAction` / `TableAction`
-  menus for now.
+- Tree / DataTable / Terminal right-click menus are ContextMenus too (same
+  keyboard and focus behaviour), configured through `TreeAction` /
+  `TableAction` / `TerminalConfig(clipboard=True)` as before.
 
 ### message
 - Module functions, not a mounted widget (toasts and dialogs live on `<body>`).
