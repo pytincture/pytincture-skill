@@ -14,6 +14,7 @@ from wapyt import (
     ModalWindow, ModalConfig,
     Toolbar, ToolbarConfig, ToolbarButton, ToolbarText, ToolbarSeparator, ToolbarSpacer,
     ContextMenu, ContextMenuConfig, MenuItem,
+    ProgressBar, ProgressBarConfig, progress_html,
     TabWidget, TabWidgetConfig, TabConfig,
     Sidebar, SidebarConfig, SidebarItem,
     Chat, ChatConfig, ChatAgentConfig, ChatMessageConfig, ChatStreamError,
@@ -305,6 +306,17 @@ buttons overlap.
 - Tree / DataTable / Terminal right-click menus are ContextMenus too (same
   keyboard and focus behaviour), configured through `TreeAction` /
   `TableAction` / `TerminalConfig(clipboard=True)` as before.
+
+### ProgressBar
+- Live: `ProgressBar(ProgressBarConfig(label=, max=, compact=True,
+  label_width=, value_width=), container=el)`; `set_value(v, max=None,
+  text=None)` is cheap enough for a progress callback; `text` replaces the
+  percentage ("42%  1.2 MB"). `set_state("done"|"error"|"paused"|"active")`,
+  `set_indeterminate(True)` when the total is unknown.
+- Static: `progress_html(value, max=100, label=, text=, state=, compact=True,
+  show_value=True)` returns escaped markup with the same look, for HTML-string
+  UIs; fraction form `progress_html(0.73, 1)`.
+- Recolour with `--wapyt-progress-fill` on an ancestor.
 
 ### message
 - Module functions, not a mounted widget (toasts and dialogs live on `<body>`).

@@ -70,6 +70,7 @@ add_datatable(id: str = 'mainwindow', datatable_config: Optional['DataTableConfi
 add_form(id: str = 'mainwindow', form_config: Optional['FormConfig'] = None) -> 'Form'
 add_terminal(id: str = 'mainwindow', terminal_config: Optional['TerminalConfig'] = None) -> 'Terminal'
 add_toolbar(id: str = 'mainwindow_header', toolbar_config: Optional['ToolbarConfig'] = None) -> 'Toolbar'
+add_progressbar(id: str = 'mainwindow', progressbar_config: Optional['ProgressBarConfig'] = None) -> 'ProgressBar'
 add_sidebar(id: str = 'mainwindow', sidebar_config: Optional['SidebarConfig'] = None) -> 'Sidebar'
 add_resourceboard(id: str = 'mainwindow', resourceboard_config: Optional['ResourceBoardConfig'] = None) -> 'ResourceBoard'
 attach_html(id: str, html: str) -> None
