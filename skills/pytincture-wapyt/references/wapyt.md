@@ -18,7 +18,7 @@ from wapyt import (
     Terminal, TerminalConfig, TerminalTheme,
     CardPanel, CardPanelConfig, CardPanelCardConfig,
     ResourceBoard, ResourceBoardConfig, ResourceItem,
-    filetransfer,
+    filetransfer, message,
 )
 ```
 
@@ -274,6 +274,18 @@ buttons overlap.
   raises `SecurityError`.
 - Pickers are Chromium-only. Check `capabilities().pickers` and tell the user
   instead of silently falling back to `download_via_anchor`.
+
+### message
+- Module functions, not a mounted widget (toasts and dialogs live on `<body>`).
+  `message.toast(text, kind="info"|"success"|"warning"|"error", timeout_ms=4000)`;
+  `timeout_ms=0` keeps it until dismissed.
+- `await message.confirm(text, title=..., ok_text=..., danger=True) -> bool`,
+  `await message.alert(...)`, `await message.prompt(text, value=...) -> str | None`.
+  They are coroutines: call them from an async method scheduled with
+  `ensure_future`, never in place of a synchronous `window.confirm()` return.
+- Text is set as text and `\n\n` starts a paragraph, so pass untrusted strings
+  straight in. Cancel, Escape and a backdrop click never confirm; `danger=True`
+  starts focus on Cancel.
 
 ### CardPanel / ResourceBoard
 - `CardPanelConfig` copy is generic by default: empty `title` and
