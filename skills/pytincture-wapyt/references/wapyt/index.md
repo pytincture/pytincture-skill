@@ -16,6 +16,7 @@ One page per module, generated from source. Load only the module you need.
 - [`sidebar`](sidebar.md) — 2 config, 1 widget
 - [`tabwidget`](tabwidget.md) — 2 config, 1 widget
 - [`terminal`](terminal.md) — 2 config, 1 widget
+- [`toolbar`](toolbar.md) — 5 config, 1 widget
 - [`tree`](tree.md) — 3 config, 1 widget
 
 ## `add_*` helpers
@@ -34,5 +35,6 @@ layout.Layout.add_resourceboard(id: str = 'mainwindow', resourceboard_config: Op
 layout.Layout.add_sidebar(id: str = 'mainwindow', sidebar_config: Optional['SidebarConfig'] = None) -> 'Sidebar'
 layout.Layout.add_tabwidget(id: str = 'mainwindow', tab_config: Optional['TabWidgetConfig'] = None) -> 'TabWidget'
 layout.Layout.add_terminal(id: str = 'mainwindow', terminal_config: Optional['TerminalConfig'] = None) -> 'Terminal'
+layout.Layout.add_toolbar(id: str = 'mainwindow_header', toolbar_config: Optional['ToolbarConfig'] = None) -> 'Toolbar'
 layout.Layout.add_tree(id: str = 'mainwindow', tree_config: Optional['TreeConfig'] = None) -> 'Tree'
 ```

@@ -69,6 +69,7 @@ add_tree(id: str = 'mainwindow', tree_config: Optional['TreeConfig'] = None) -> 
 add_datatable(id: str = 'mainwindow', datatable_config: Optional['DataTableConfig'] = None) -> 'DataTable'
 add_form(id: str = 'mainwindow', form_config: Optional['FormConfig'] = None) -> 'Form'
 add_terminal(id: str = 'mainwindow', terminal_config: Optional['TerminalConfig'] = None) -> 'Terminal'
+add_toolbar(id: str = 'mainwindow_header', toolbar_config: Optional['ToolbarConfig'] = None) -> 'Toolbar'
 add_sidebar(id: str = 'mainwindow', sidebar_config: Optional['SidebarConfig'] = None) -> 'Sidebar'
 add_resourceboard(id: str = 'mainwindow', resourceboard_config: Optional['ResourceBoardConfig'] = None) -> 'ResourceBoard'
 attach_html(id: str, html: str) -> None

@@ -12,6 +12,7 @@ from wapyt import (
     DataTable, DataTableConfig, ColumnConfig, TableAction,
     Form, FormConfig, FieldConfig, SelectOption,
     ModalWindow, ModalConfig,
+    Toolbar, ToolbarConfig, ToolbarButton, ToolbarText, ToolbarSeparator, ToolbarSpacer,
     TabWidget, TabWidgetConfig, TabConfig,
     Sidebar, SidebarConfig, SidebarItem,
     Chat, ChatConfig, ChatAgentConfig, ChatMessageConfig, ChatStreamError,
@@ -66,6 +67,7 @@ layout and return the widget:
 | `add_datatable(id, datatable_config)` | `DataTable` |
 | `add_form(id, form_config)` | `Form` |
 | `add_tabwidget(id, tab_config)` | `TabWidget` |
+| `add_toolbar(id="mainwindow_header", toolbar_config)` | `Toolbar` |
 | `add_sidebar(id, sidebar_config)` | `Sidebar` |
 | `add_chat(id, chat_config)` | `Chat` |
 | `add_terminal(id, terminal_config)` | `Terminal` |
@@ -121,6 +123,7 @@ handlers receive **one dict**:
 | Widget | Event → payload |
 |---|---|
 | `Tree` | `on_select` / `on_activate` (leaf double-click) → `{id, node}`; `on_action` → `{action, id, node}`; `on_toggle` → `{id, expanded}` |
+| `Toolbar` | `on_click` → `{id, group, active}` (`group`/`active` are `None` for a plain button) |
 | `DataTable` | `on_select` → `{ids, id, rows}`; `on_activate` → `{id, row}`; `on_action` → `{action, id, row, selected}`; `on_columns` → `{reason, column, columns}`; `on_drop` → `{files}` (metadata only) |
 | `Form` | `on_submit` → values dict (only after validation passes); `on_change` → `{id, value}`; `on_invalid` → `{errors}`; `on_cancel` |
 | `Sidebar` | `on_select` → `{id, data}` |
@@ -151,7 +154,8 @@ For DOM listeners you add yourself, wrap callbacks with
 
 ## Pyodide FFI
 
-- JS `null` crosses as **`JsNull`, which is not `None`**. `if el is None:` never
+- JS `null` crosses as **`JsNull`, which is not `None`**, including inside
+  most event payloads (Tree's cleared `on_select` `id`; Toolbar maps it to `None`). `if el is None:` never
   fires. Test truthiness: `if not el:`.
 - A missing JS property raises `AttributeError` instead of returning
   `undefined`; use `getAttribute()` / `hasattr()` rather than
@@ -275,12 +279,24 @@ buttons overlap.
 - Pickers are Chromium-only. Check `capabilities().pickers` and tell the user
   instead of silently falling back to `download_via_anchor`.
 
+### Toolbar
+- Items: `ToolbarButton(id, label, icon, tooltip, variant, toggle, group,
+  active, badge, disabled, hidden, show_label, keep_label)`, `ToolbarText(id,
+  text)`, `ToolbarSeparator()`, `ToolbarSpacer()`. Ids must be unique.
+- `group="mode"` buttons are one-of-several (`get_active("mode")`);
+  `toggle=True` latches; `variant` is `primary` / `accent` / `danger`.
+- Show and relabel at runtime with `set_hidden`, `set_text`, `set_badge`
+  (`None` clears), `set_disabled`, `set_active`.
+- `compact="auto"` drops labels to icons when it overflows and restores them
+  when it fits; give every button an icon (or `keep_label=True`) so the narrow
+  form still makes sense.
+
 ### message
 - Module functions, not a mounted widget (toasts and dialogs live on `<body>`).
   `message.toast(text, kind="info"|"success"|"warning"|"error", timeout_ms=4000)`;
   `timeout_ms=0` keeps it until dismissed.
 - `await message.confirm(text, title=..., ok_text=..., danger=True) -> bool`,
-  `await message.alert(...)`, `await message.prompt(text, value=...) -> str | None`.
+  `await message.alert(...)`, `await message.prompt(text, value=..., password=False) -> str | None`.
   They are coroutines: call them from an async method scheduled with
   `ensure_future`, never in place of a synchronous `window.confirm()` return.
 - Text is set as text and `\n\n` starts a paragraph, so pass untrusted strings
