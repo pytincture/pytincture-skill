@@ -1,6 +1,6 @@
 ---
 name: pytincture-wapyt
-description: Build or modify pytincture apps that use the wapyt widgetset (wA PyTincture, the DHTMLX-free widgets) — Layout/MainWindow, Toolbar, Tree, DataTable, Form, ModalWindow, TabWidget, Sidebar, Chat, Terminal, CardPanel, ResourceBoard, the message toasts/dialogs and the filetransfer helpers. Use when code imports `wapyt`, when asked for a pytincture UI without DHTMLX/dhxpyt, or when wiring a wapyt app's service.py, BFF classes, browser wheel or APP_ENTRYPOINT.
+description: Build or modify pytincture apps that use the wapyt widgetset (wA PyTincture, the DHTMLX-free widgets) — Layout/MainWindow, Toolbar, ContextMenu, Tree, DataTable, Form, ModalWindow, TabWidget, Sidebar, Chat, Terminal, CardPanel, ResourceBoard, the message toasts/dialogs and the filetransfer helpers. Use when code imports `wapyt`, when asked for a pytincture UI without DHTMLX/dhxpyt, or when wiring a wapyt app's service.py, BFF classes, browser wheel or APP_ENTRYPOINT.
 ---
 
 # Pytincture + wapyt
@@ -14,7 +14,7 @@ events come back through `.on_*` handlers. Targets pytincture **1.0.0rc5** and
 wapyt **0.1.0**. Service mode needs Python 3.13 or 3.14.
 
 wapyt is not dhxpyt. The widget set, names and signatures differ (`TabWidget`
-not `Tabbar`, `DataTable` not `Grid`, no Menu/Chart), so do not carry
+not `Tabbar`, `DataTable` not `Grid`, no menu bar or Chart), so do not carry
 dhxpyt code across — look the API up in `references/wapyt/`.
 
 ## Rules that apply to every task
@@ -95,6 +95,7 @@ exact config fields — do not load them all.
 | Exception in an async handler vanishes | `ensure_future` swallows it. Wrap the coroutine and `js.console.error(traceback.format_exc())`. |
 | Chat history lost on reload | `ChatConfig(storage_key=...)` unset; without it the prefix is random per instance. |
 | Stream renders an empty message | Backend sent an in-band `{"error": ...}` chunk. Use `Chat.consume_stream`, or check `Chat.extract_stream_error`. |
+| Building a right-click menu from HTML | Use `ContextMenu`: `attach(selector)` plus `data-context` on rows, or `show_at(x, y, hide=[...], disable=[...])` per opening. |
 | Reaching for `window.confirm()` or a hand-made toast | Use `wapyt.message`: `toast(...)`, and `await message.confirm(...)` / `alert` / `prompt` from an async handler. |
 | File picker raises `SecurityError` | A `filetransfer.pick_*` call ran after an `await`. Call it first in the click handler. |
 | Mic button does nothing | pytincture sends `Permissions-Policy: microphone=()`. Set `PYTINCTURE_ALLOW_MICROPHONE=1` and serve a secure context. |
