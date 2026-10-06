@@ -106,7 +106,7 @@ Quick start::
 
     layout = Layout(LayoutConfig(rows=[CellConfig(id="chat", grow=1)]))
     chat = layout.add_chat("chat", ChatConfig())
-    chat.on_send(lambda payload: print("User sent:", payload["content"]))
+    chat.on_send(lambda payload: print("User sent:", payload["text"]))
 
 The widget exposes helpers for streaming updates (`start_stream`,
 `append_stream`, `finish_stream`) so LLM-driven agents can incrementally
@@ -117,7 +117,7 @@ Chat(config: Optional[ChatConfig] = None, *, container: Any = None, root: Option
 ```
 
 ```python
-on_send(handler: Callable[[Dict[str, Any]], Any]) -> None  # Fired when the user submits a prompt from the composer. Handler receives a payload with message text and identifiers.
+on_send(handler: Callable[[Dict[str, Any]], Any]) -> None  # Fired when the user submits a prompt from the composer.
 on_voice(handler: Callable[[Dict[str, Any]], Any]) -> None  # Fired when a push-to-talk recording finishes.
 on_voice_error(handler: Callable[[Dict[str, Any]], Any]) -> None  # Fired when capture could not start -- permission denied, no device, or a Permissions-Policy that blocks the microphone.
 apply_transcript(text: str, *, submit: bool = False) -> None  # Write a transcript into the composer.
