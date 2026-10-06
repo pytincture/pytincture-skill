@@ -7,6 +7,7 @@
 | File | Role |
 |---|---|
 | `service.py` | ASGI entrypoint using `create_app` + `PytinctureConfig` |
+| `launch.py` | compatibility `launch_service()` entrypoint with development login and role claims |
 | `py_ui.py` | browser entrypoint: layout, sidebar, toolbar, tabbar, grid, chart, calendar, form |
 | `py_ui_data.py` | `@backend_for_frontend` class supplying data |
 | `widget.py` | literal `__widgetset__`/`__version__` for the backend |
@@ -19,8 +20,10 @@ cd assets/examples/pytincture_app
 python -m uvicorn service:app --port 8070   # then open http://127.0.0.1:8070/py_ui
 ```
 
-`py_ui.py` also carries a guarded `launch_service()` block showing the
-compatibility launcher.
+`launch.py` runs the same app through the compatibility `launch_service()`
+with development email login (`pip install 'pytincture[password]'`, then
+`python launch.py`, sign in at `http://127.0.0.1:8070/py_ui` as
+`you@example.com` with any password).
 
 `load_ui()` builds the widgets and returns; `_load_dataset()` then awaits
 `py_ui_data().dataset_async()` and fills the grid and the ratings chart. That
@@ -47,8 +50,7 @@ So the example splits the two cases:
 - `reconciliation_dataset()` adds `roles={"manager"}` and `internal=True`. It
   is reachable once an identity source supplies the role: Google/Microsoft/
   SAML, a `set_user_authenticator()` callable, or `AUTH_USER_CLAIMS` with
-  `ENABLE_USER_LOGIN`, as the `launch_service()` block at the bottom of
-  `py_ui.py` shows.
+  `ENABLE_USER_LOGIN`, as `launch.py` shows.
 
 `internal` is not a claim Pytincture knows, so it passes through to the hook
 untouched -- which is what a policy hook is for. Do not re-implement role

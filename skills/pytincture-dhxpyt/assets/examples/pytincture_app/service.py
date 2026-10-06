@@ -6,13 +6,12 @@ Then open: http://127.0.0.1:8070/py_ui
 
 create_app() owns its own configuration, BFF registry and state, so tests and
 multi-app processes do not have to mutate global environment settings.
-`launch_service()` (see the bottom of py_ui.py) remains supported for existing
+`launch_service()` (see launch.py) remains supported for existing
 code.
 """
 from pathlib import Path
 
 from pytincture import PytinctureConfig, create_app
-from pytincture.backend.app import set_bff_policy_hook
 
 HERE = Path(__file__).resolve().parent
 
@@ -44,13 +43,13 @@ def policy_hook(user, policy, class_name, function_name, **kwargs):
     return True
 
 
-# Mandatory whenever any export carries @bff_policy: without a hook, such an
-# export fails closed.
-set_bff_policy_hook(policy_hook)
-
+# Mandatory whenever any export carries @bff_policy: without a hook the service
+# refuses to start. Register it by dotted path; set_bff_policy_hook() does not
+# reach an app built by create_app(), which loads its own backend module copy.
 app = create_app(
     PytinctureConfig(
         modules_path=str(HERE),
         default_application="py_ui",
+        environment={"BFF_POLICY_HOOK_PATH": "service.policy_hook"},
     )
 )

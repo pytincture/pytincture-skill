@@ -4,7 +4,6 @@ with a collapsible sidebar, content area, a Tabbar containing a grid, calendar, 
 """
 import asyncio
 import json
-import sys
 
 import js
 
@@ -230,53 +229,3 @@ class py_ui(MainWindow):
             self.sidebar.toggle()
             self.sidebar_collapsed = True
 
-
-if __name__ == "__main__" and sys.platform != "emscripten":
-    from pytincture import launch_service
-    from pytincture.backend.app import set_bff_policy_hook
-
-    # The hook is written out here rather than imported from service.py on
-    # purpose: appcode packaging walks every import in this file, including
-    # the ones under this guard, so a local `import policy` would ship the
-    # server-side module to the browser.
-    TRUSTED_INTERNAL_HOSTS = {"127.0.0.1", "::1"}
-
-    def policy_hook(user, policy, class_name, function_name, **kwargs):
-        """
-        Runs before every @backend_for_frontend call that carries @bff_policy.
-
-        Pytincture has already enforced the claims it recognises -- issuer,
-        tenant, provider, auth_provider, application, operation and
-        role/roles, the last requiring ALL of the declared roles. The hook
-        handles what a declaration cannot express and receives the policy keys
-        Pytincture does not know.
-
-        The contract is a return value, not an exception:
-          True or None -> allow
-          False        -> deny (Pytincture raises 403)
-          anything else-> RuntimeError (fail closed)
-
-        `user` holds the OAuth/SAML/login claims; kwargs["request"] is the
-        FastAPI Request, for IP/tenant checks and the like.
-        """
-        if policy.get("internal"):
-            request = kwargs.get("request")
-            client_host = request.client.host if request is not None and request.client else ""
-            return client_host in TRUSTED_INTERNAL_HOSTS
-        return True
-
-    # Registering the hook is mandatory: a @bff_policy export with no hook
-    # makes the service fail closed at startup.
-    set_bff_policy_hook(policy_hook)
-
-    launch_service(
-        env_vars={
-            "ENABLE_USER_LOGIN": "true",
-            "ALLOWED_EMAILS": "you@example.com",
-            "SECRET_KEY": "change-me",  # required for session signing
-            # Login alone grants no roles. Claims configured here are what
-            # make a roles-bearing export such as
-            # py_ui_data.reconciliation_dataset() reachable.
-            "AUTH_USER_CLAIMS": '[{"email": "you@example.com", "roles": ["manager"]}]',
-        }
-    )

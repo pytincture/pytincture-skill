@@ -46,7 +46,9 @@ dhxpyt **0.9.18** (the release pytincture 1.0 locks). Service mode needs Python
    `service.py`, and run it with uvicorn. (`launch_service()` still works and is
    the compatibility path for existing code.)
 5. Register a policy hook if any export uses `@bff_policy` — without one the
-   service **fails closed at startup**. Pytincture enforces declared claims
+   service **fails closed at startup**. Register it by dotted path,
+   `environment={"BFF_POLICY_HOOK_PATH": "service.policy_hook"}`;
+   `set_bff_policy_hook()` does not reach a `create_app()` app. Pytincture enforces declared claims
    itself before the hook; `roles` requires **all** of them and needs an
    identity source, so declaring `roles` on an export a no-login service must
    serve is an unconditional 403.
@@ -100,7 +102,8 @@ configuration keys, explicit startup, and the CDN escape hatch.
 | Wrong separator style in a toolbar | `sidebar.SeparatorConfig` shadowed `toolbar.SeparatorConfig`. Alias the imports. |
 | 404 for `dhxpyt-99.99.99-py3-none-any.whl` | The runtime fell through to `devWheelVersion`. Pin `widgetlib: "dhxpyt==0.9.18"`. |
 | micropip install rejected | Every entry needs an exact `name==version` pin or `url#sha256=`. |
-| Service refuses to start, mentions `@bff_policy` | Register `set_bff_policy_hook()` or set `BFF_POLICY_HOOK_PATH`. |
+| Service refuses to start, mentions `@bff_policy` | Register the hook by dotted path: `PytinctureConfig(environment={"BFF_POLICY_HOOK_PATH": "service.policy_hook"})`. `set_bff_policy_hook()` does not reach a `create_app()` app. |
+| Data written by a BFF call is gone on the next call | BFF modules are re-executed per call, so module globals reset. Keep state in storage. |
 | Policy hook raises `RuntimeError` | Hooks must return `True`/`False`/`None`, nothing else. |
 | Shell renders but every BFF call answers 403 | An export declares `roles` while no identity source supplies role claims. Drop the requirement, or configure login (`AUTH_USER_CLAIMS`, an authenticator, or an IdP). |
 

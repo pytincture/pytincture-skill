@@ -1,21 +1,22 @@
 # pytincture quick reference (service mode)
 
-Targets pytincture **1.0.0rc5**. Requires Python 3.13 or 3.14.
+Targets pytincture **1.0.0rc5** with wapyt **0.1.0**. Requires Python 3.13 or 3.14.
 
 ## What it is
 
 A Python framework that runs Python-driven UIs in the browser via Pyodide.
 Service mode adds a backend: BFF calls, authentication, private server Python,
-and backend-hosted widget wheels. Standalone mode has none of that — see
-[`pytincture-runtime.md`](pytincture-runtime.md).
+and backend-hosted widget wheels. wapyt apps are built in service mode — wapyt
+is not published to an index, which is what standalone pages install from.
 
 ## Application layout
 
 ```text
 my_service/
 ├── service.py          # ASGI process code; never sent to the browser
-├── dashboard.py        # browser entrypoint: class dashboard(MainWindow)
+├── dashboard.py        # browser entrypoint: APP_ENTRYPOINT + class Dashboard(MainWindow)
 ├── widget.py           # literal __widgetset__/__version__ metadata
+├── wapyt-99.99.99-py3-none-any.whl   # browser wheel, built by dev_wheel.sh
 ├── dashboard_data.py   # decorated BFF class; replaced by a browser stub
 └── helpers.py          # statically imported browser code
 ```
@@ -29,26 +30,50 @@ Supported forms: a top-level class or callable named the same as the application
 a top-level class directly inheriting `dhxpyt.layout.MainWindow`; or literal
 metadata such as `APP_ENTRYPOINT = "Dashboard"`.
 
-## widget.py is required
+**The MainWindow form is hardcoded to dhxpyt** and never matches
+`wapyt.MainWindow`. So a wapyt app either names its class after the module
+(`class dashboard(MainWindow)` in `dashboard.py`) or declares
+`APP_ENTRYPOINT = "Dashboard"` at module level. Without either, the page
+answers **HTTP 422**.
 
-The backend resolves which widgetset wheel to install by walking the
-entrypoint's **imports** looking for literal metadata, so the entrypoint must
-import it:
+## Widgetset selection and the browser wheel
 
-```python
-# widget.py
-__widgetset__ = "dhxpyt"
-__version__ = "0.9.18"
+The backend resolves which widgetset to install by walking the entrypoint's
+**imports** for literal metadata. Two things satisfy it:
+
+- a local `widget.py` that the entrypoint imports (recommended — works
+  whatever is installed server-side):
+
+  ```python
+  # widget.py
+  __widgetset__ = "wapyt"
+  __version__ = "0.1.0"
+  ```
+
+  ```python
+  # dashboard.py
+  import widget  # noqa: F401
+  from wapyt import MainWindow
+  ```
+
+- or `from wapyt import ...` with wapyt installed in the **server's** Python
+  **non-editable**. An editable install does not list `wapyt/__init__.py` in its
+  distribution files, so discovery finds nothing and the app boots with no
+  widgets.
+
+Either way the pin is `wapyt==0.1.0`, and **the browser installs a wheel, not
+your checkout.** wapyt is not on PyPI and not in pytincture's built-in wheel
+locks (those hold only dhxpyt), so the wheel must sit at the root of
+`modules_path`, at the pinned version or at `PYTINCTURE_DEV_WHEEL_VERSION`
+(default `99.99.99`). Build it from the wapyt checkout:
+
+```bash
+/path/to/wa_pytincture_widgetset/scripts/dev_wheel.sh /path/to/modules_path
 ```
 
-```python
-# dashboard.py
-import widget
-from dhxpyt.layout import MainWindow
-```
-
-Both values must be literals; the backend parses them with `ast` and never
-imports the module.
+Re-run it after **any** wapyt change and restart the service. The wheel carries
+`pytincture-assets.json`, and pytincture hash-verifies every widget JS/CSS file
+against it before evaluating them.
 
 ## ASGI factory (recommended)
 
@@ -61,7 +86,7 @@ app = create_app(
     PytinctureConfig(
         modules_path=str(HERE),
         default_application="dashboard",
-        cors_allowed_origins=("https://dashboard.example.com",),
+        environment={"BFF_POLICY_HOOK_PATH": "service.policy_hook"},  # if any @bff_policy
     )
 )
 ```
@@ -72,7 +97,8 @@ processes need not mutate global environment settings.
 
 ## Compatibility launcher
 
-`launch_service()` remains supported. Put it in its **own module**, not
+`launch_service()` remains supported. Build the wapyt wheel into the folder
+first, as above. Put it in its **own module**, not
 in the browser entrypoint: the entrypoint imports `js` and the widgetset at the
 top, so `python dashboard.py` fails on the server before reaching any
 `__main__` guard, and pytincture packages every import in it — guarded or not —

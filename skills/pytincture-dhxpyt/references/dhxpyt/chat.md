@@ -92,8 +92,8 @@ focus_composer() -> None
 set_chat_badge(chat_id: str, badge: Optional[int]) -> None
 get_chats() -> List[Dict[str, Any]]
 get_messages(chat_id: Optional[str] = None) -> List[Dict[str, Any]]
-build_history(chat_id: Optional[str] = None, system_prompt: Optional[str] = None, exclude_ids: Optional[Iterable[str]] = None, include_empty: bool = False) -> List[Dict[str, str]]
+build_history(*, chat_id: Optional[str] = None, system_prompt: Optional[str] = None, exclude_ids: Optional[Iterable[str]] = None, include_empty: bool = False) -> List[Dict[str, str]]
 extract_stream_text(chunk: Any) -> str
-consume_stream(response_id: str, stream: Any, parser: Optional[Callable[[Any], str]] = None, finish: bool = True, on_error: Optional[Callable[[Exception], None]] = None, cancel_check: Optional[Callable[[], bool]] = None) -> None
+consume_stream(response_id: str, stream: Any, *, parser: Optional[Callable[[Any], str]] = None, finish: bool = True, on_error: Optional[Callable[[Exception], None]] = None, cancel_check: Optional[Callable[[], bool]] = None) -> None
 destroy() -> None
 ```
