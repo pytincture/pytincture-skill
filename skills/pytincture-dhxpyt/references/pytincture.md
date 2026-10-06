@@ -133,6 +133,10 @@ classes are never registered.
   read-only, repeatable and bodyless.
 - CSRF tokens are attached automatically on cookie-authenticated state changes.
 - Keep secrets, database clients and file access in BFF/server modules only.
+- **Never keep state in BFF module globals.** Pytincture executes the BFF
+  module's source afresh for every call, so a module-level list, cache or lock
+  is recreated on each request. Put state in storage, or in an ordinary module
+  the BFF imports by name (that one is cached in `sys.modules` as usual).
 
 ## Declared policy
 
@@ -173,8 +177,7 @@ The hook contract is a **return value**, not an exception:
 | anything else | `RuntimeError` (fails closed) |
 
 ```python
-from pytincture.backend.app import set_bff_policy_hook
-
+# service.py
 TRUSTED_INTERNAL_HOSTS = {"127.0.0.1", "::1"}
 
 def policy_hook(user, policy, class_name, function_name, **kwargs):
@@ -185,15 +188,26 @@ def policy_hook(user, policy, class_name, function_name, **kwargs):
         return client_host in TRUSTED_INTERNAL_HOSTS
     return True
 
-set_bff_policy_hook(policy_hook)
+app = create_app(PytinctureConfig(
+    modules_path=str(HERE),
+    environment={"BFF_POLICY_HOOK_PATH": "service.policy_hook"},
+))
 ```
+
+**Register the hook by dotted path (`BFF_POLICY_HOOK_PATH`)**, in
+`PytinctureConfig(environment=...)` or the process environment. Each
+`create_app()` loads its own copy of the backend module, so the module-global
+`set_bff_policy_hook()` from `pytincture.backend.app` never reaches the app it
+returns, and the service still refuses to start. The path must be importable
+from the process: `service.policy_hook` resolves when uvicorn runs
+`service:app` from that directory.
 
 The hook is called with keyword arguments `user`, `policy`, `application`,
 `class_name`, `function_name`, `module_path` and `request`.
 
 **Registration is mandatory.** Any export carrying `@bff_policy` with no hook
-registered (via `set_bff_policy_hook()` or `BFF_POLICY_HOOK_PATH`) makes the
-service fail closed at startup. Async hooks are supported and are subject to the
+registered through `BFF_POLICY_HOOK_PATH` makes the service fail closed at
+startup. Async hooks are supported and are subject to the
 remaining BFF call deadline.
 
 Related hooks: `set_user_authenticator`, `revoke_session`,
