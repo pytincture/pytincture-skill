@@ -91,7 +91,7 @@ exact config fields — do not load them all.
 | Form vanished after `set_content` | `set_content` replaces the body. Mount into `modal.body` instead. |
 | A `body { font-family }` rule doesn't change the UI | Layouts and modals read `--wapyt-font-family`. Override that on `:root`. |
 | Button text overlapping / icons show as words | A ligature icon font. Use MDI classes (`mdi-pencil`); never add a Material Icons/Symbols `<link>`. |
-| `if el is None:` never fires | JS `null` arrives as `JsNull`, which is not `None`. Test truthiness. |
+| `if el is None:` never fires on a DOM lookup | Your own JS calls (`js.document.getElementById`) return JS `null` as `JsNull`, not `None`. Test truthiness. wapyt payloads and getters already give `None`. |
 | Exception in an async handler vanishes | `ensure_future` swallows it. Wrap the coroutine and `js.console.error(traceback.format_exc())`. |
 | Chat history lost on reload | `ChatConfig(storage_key=...)` unset; without it the prefix is random per instance. |
 | Stream renders an empty message | Backend sent an in-band `{"error": ...}` chunk. Use `Chat.consume_stream`, or check `Chat.extract_stream_error`. |
