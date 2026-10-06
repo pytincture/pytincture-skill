@@ -13,6 +13,7 @@ One page per module, generated from source. Load only the module you need.
 - [`layout`](layout.md) — 2 config, 3 widget
 - [`message`](message.md) — 0 config, 0 widget, 8 function
 - [`modal`](modal.md) — 1 config, 1 widget
+- [`progressbar`](progressbar.md) — 1 config, 1 widget, 1 function
 - [`resourceboard`](resourceboard.md) — 2 config, 1 widget
 - [`sidebar`](sidebar.md) — 2 config, 1 widget
 - [`tabwidget`](tabwidget.md) — 2 config, 1 widget
@@ -32,6 +33,7 @@ layout.Layout.add_chat(id: str = 'mainwindow', chat_config: Optional['ChatConfig
 layout.Layout.add_datatable(id: str = 'mainwindow', datatable_config: Optional['DataTableConfig'] = None) -> 'DataTable'
 layout.Layout.add_form(id: str = 'mainwindow', form_config: Optional['FormConfig'] = None) -> 'Form'
 layout.Layout.add_layout(id: str = 'mainwindow', layout_config: Optional[LayoutConfig] = None) -> TLayout
+layout.Layout.add_progressbar(id: str = 'mainwindow', progressbar_config: Optional['ProgressBarConfig'] = None) -> 'ProgressBar'
 layout.Layout.add_resourceboard(id: str = 'mainwindow', resourceboard_config: Optional['ResourceBoardConfig'] = None) -> 'ResourceBoard'
 layout.Layout.add_sidebar(id: str = 'mainwindow', sidebar_config: Optional['SidebarConfig'] = None) -> 'Sidebar'
 layout.Layout.add_tabwidget(id: str = 'mainwindow', tab_config: Optional['TabWidgetConfig'] = None) -> 'TabWidget'
