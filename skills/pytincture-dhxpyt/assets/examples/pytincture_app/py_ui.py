@@ -4,7 +4,6 @@ with a collapsible sidebar, content area, a Tabbar containing a grid, calendar, 
 """
 import asyncio
 import json
-import sys
 
 import js
 
@@ -230,25 +229,3 @@ class py_ui(MainWindow):
             self.sidebar.toggle()
             self.sidebar_collapsed = True
 
-
-if __name__ == "__main__" and sys.platform != "emscripten":
-    from pytincture import launch_service
-
-    # A @bff_policy export with no hook makes the service fail closed at
-    # startup. The hook is referenced by dotted path, never imported: appcode
-    # packaging walks every import in this file, including the ones under this
-    # guard, so `from service import policy_hook` would ship server code to the
-    # browser. set_bff_policy_hook() does not work here -- the app is built in
-    # a child process from its own copy of the backend module.
-    launch_service(
-        env_vars={
-            "BFF_POLICY_HOOK_PATH": "service.policy_hook",
-            "ENABLE_USER_LOGIN": "true",
-            "ALLOWED_EMAILS": "you@example.com",
-            "SECRET_KEY": "change-me",  # required for session signing
-            # Login alone grants no roles. Claims configured here are what
-            # make a roles-bearing export such as
-            # py_ui_data.reconciliation_dataset() reachable.
-            "AUTH_USER_CLAIMS": '[{"email": "you@example.com", "roles": ["manager"]}]',
-        }
-    )

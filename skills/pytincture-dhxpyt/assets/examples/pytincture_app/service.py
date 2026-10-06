@@ -6,7 +6,7 @@ Then open: http://127.0.0.1:8070/py_ui
 
 create_app() owns its own configuration, BFF registry and state, so tests and
 multi-app processes do not have to mutate global environment settings.
-`launch_service()` (see the bottom of py_ui.py) remains supported for existing
+`launch_service()` (see launch.py) remains supported for existing
 code.
 """
 from pathlib import Path

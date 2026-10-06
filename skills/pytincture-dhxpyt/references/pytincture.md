@@ -72,16 +72,34 @@ processes need not mutate global environment settings.
 
 ## Compatibility launcher
 
-`launch_service()` remains supported. Guard it so it never runs under Pyodide —
-the same module is shipped to the browser:
+`launch_service()` remains supported. Put it in its **own module**, not
+in the browser entrypoint: the entrypoint imports `js` and the widgetset at the
+top, so `python dashboard.py` fails on the server before reaching any
+`__main__` guard, and pytincture packages every import in it — guarded or not —
+for the browser.
 
 ```python
+# launch.py
 import sys
+from pathlib import Path
 
 if __name__ == "__main__" and sys.platform != "emscripten":
     from pytincture import launch_service
-    launch_service(modules_folder=".")
+    launch_service(
+        modules_folder=str(Path(__file__).resolve().parent),
+        default_application="dashboard",
+        env_vars={"BFF_POLICY_HOOK_PATH": "launch.policy_hook"},  # if any @bff_policy
+    )
 ```
+
+`launch_service()` builds the app in a child process, so register hooks by
+dotted path here too.
+
+For local login, `ENABLE_USER_LOGIN` + `ENABLE_DEV_EMAIL_LOGIN` +
+`ALLOWED_EMAILS` signs in by email with any password, from a literal loopback
+address only. It still needs `pytincture[password]` installed (every email
+login runs an argon2 check), and with any other login mode a
+`SECRET_KEY` of 32+ characters plus `PYTINCTURE_ALLOWED_HOSTS`.
 
 ## Backend-for-frontend classes
 
