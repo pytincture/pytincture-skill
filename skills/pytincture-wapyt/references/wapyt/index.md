@@ -10,6 +10,7 @@ One page per module, generated from source. Load only the module you need.
 - [`filetransfer`](filetransfer.md) — 3 config, 0 widget, 14 function
 - [`form`](form.md) — 3 config, 1 widget
 - [`layout`](layout.md) — 2 config, 3 widget
+- [`message`](message.md) — 0 config, 0 widget, 8 function
 - [`modal`](modal.md) — 1 config, 1 widget
 - [`resourceboard`](resourceboard.md) — 2 config, 1 widget
 - [`sidebar`](sidebar.md) — 2 config, 1 widget
