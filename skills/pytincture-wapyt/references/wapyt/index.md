@@ -6,6 +6,7 @@ One page per module, generated from source. Load only the module you need.
 
 - [`cardpanel`](cardpanel.md) — 2 config, 1 widget
 - [`chat`](chat.md) — 3 config, 2 widget
+- [`contextmenu`](contextmenu.md) — 2 config, 1 widget
 - [`datatable`](datatable.md) — 3 config, 1 widget
 - [`filetransfer`](filetransfer.md) — 3 config, 0 widget, 14 function
 - [`form`](form.md) — 3 config, 1 widget

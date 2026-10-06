@@ -13,6 +13,7 @@ from wapyt import (
     Form, FormConfig, FieldConfig, SelectOption,
     ModalWindow, ModalConfig,
     Toolbar, ToolbarConfig, ToolbarButton, ToolbarText, ToolbarSeparator, ToolbarSpacer,
+    ContextMenu, ContextMenuConfig, MenuItem,
     TabWidget, TabWidgetConfig, TabConfig,
     Sidebar, SidebarConfig, SidebarItem,
     Chat, ChatConfig, ChatAgentConfig, ChatMessageConfig, ChatStreamError,
@@ -124,6 +125,7 @@ handlers receive **one dict**:
 |---|---|
 | `Tree` | `on_select` / `on_activate` (leaf double-click) → `{id, node}`; `on_action` → `{action, id, node}`; `on_toggle` → `{id, expanded}` |
 | `Toolbar` | `on_click` → `{id, group, active}` (`group`/`active` are `None` for a plain button) |
+| `ContextMenu` | `on_select` → `{id, context, target}` (`target` = clicked element's `data-context`); `on_show` / `on_hide` → `{context, target}` |
 | `DataTable` | `on_select` → `{ids, id, rows}`; `on_activate` → `{id, row}`; `on_action` → `{action, id, row, selected}`; `on_columns` → `{reason, column, columns}`; `on_drop` → `{files}` (metadata only) |
 | `Form` | `on_submit` → values dict (only after validation passes); `on_change` → `{id, value}`; `on_invalid` → `{errors}`; `on_cancel` |
 | `Sidebar` | `on_select` → `{id, data}` |
@@ -290,6 +292,18 @@ buttons overlap.
 - `compact="auto"` drops labels to icons when it overflows and restores them
   when it fits; give every button an icon (or `keep_label=True`) so the narrow
   form still makes sense.
+
+### ContextMenu
+- Not mounted: `menu = ContextMenu(ContextMenuConfig(items=[MenuItem(id, label,
+  icon, shortcut=, danger=, disabled=, items=[...submenu]), MenuItem(separator=True)]))`.
+  Ids are unique across the menu including submenus; `shortcut` is a hint only.
+- `menu.attach("#list", context=...)` opens on right-click / Shift+F10 / Menu
+  key; give rows `data-context="<row id>"` and read `p["target"]`.
+- Per-row permissions: `show_at(event.clientX, event.clientY, context=row,
+  hide=[ids], disable=[ids])` from your own `contextmenu` listener
+  (`event.preventDefault()` first).
+- Tree / DataTable / Terminal keep their own `TreeAction` / `TableAction`
+  menus for now.
 
 ### message
 - Module functions, not a mounted widget (toasts and dialogs live on `<body>`).
