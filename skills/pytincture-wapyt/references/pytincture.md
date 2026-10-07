@@ -56,9 +56,10 @@ The backend resolves which widgetset to install by walking the entrypoint's
   from wapyt import MainWindow
   ```
 
-- or `from wapyt import ...` with wapyt installed in the **server's** Python
-  **non-editable**. An editable install does not list `wapyt/__init__.py` in its
-  distribution files, so discovery finds nothing and the app boots with no
+- or `from wapyt import ...` with wapyt installed in the **server's** Python.
+  From pytincture 1.0.0rc13 an editable install works too. Before rc13 it must
+  be **non-editable**: an editable install does not list `wapyt/__init__.py` in
+  its distribution files, so discovery found nothing and the app booted with no
   widgets.
 
 Either way the pin is `wapyt==0.1.0`, and **the browser installs a wheel, not
