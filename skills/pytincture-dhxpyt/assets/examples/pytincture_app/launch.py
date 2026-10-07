@@ -1,8 +1,8 @@
 """
 Compatibility launcher: the same app through launch_service(), with user login.
 
-Run with:  pip install 'pytincture[password]'   # email login verifies with argon2
-           python launch.py
+Run with:  python launch.py
+           (through pytincture 1.0.0rc12, first: pip install 'pytincture[password]')
 Then open: http://127.0.0.1:8070/py_ui and sign in as you@example.com with any
 password -- the development login skips the password check, from a literal
 loopback address only (127.0.0.1, not localhost).

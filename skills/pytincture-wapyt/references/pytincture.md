@@ -56,9 +56,10 @@ The backend resolves which widgetset to install by walking the entrypoint's
   from wapyt import MainWindow
   ```
 
-- or `from wapyt import ...` with wapyt installed in the **server's** Python
-  **non-editable**. An editable install does not list `wapyt/__init__.py` in its
-  distribution files, so discovery finds nothing and the app boots with no
+- or `from wapyt import ...` with wapyt installed in the **server's** Python.
+  From pytincture 1.0.0rc13 an editable install works too. Before rc13 it must
+  be **non-editable**: an editable install does not list `wapyt/__init__.py` in
+  its distribution files, so discovery found nothing and the app booted with no
   widgets.
 
 Either way the pin is `wapyt==0.1.0`, and **the browser installs a wheel, not
@@ -123,9 +124,10 @@ dotted path here too.
 
 For local login, `ENABLE_USER_LOGIN` + `ENABLE_DEV_EMAIL_LOGIN` +
 `ALLOWED_EMAILS` signs in by email with any password, from a literal loopback
-address only. It still needs `pytincture[password]` installed (every email
-login runs an argon2 check), and with any other login mode a
-`SECRET_KEY` of 32+ characters plus `PYTINCTURE_ALLOWED_HOSTS`.
+address only. From 1.0.0rc13 it needs no extra; through rc12 it also needed
+`pytincture[password]` (every email login ran an argon2 check). With any other
+login mode it needs a `SECRET_KEY` of 32+ characters plus
+`PYTINCTURE_ALLOWED_HOSTS`.
 
 ## Backend-for-frontend classes
 

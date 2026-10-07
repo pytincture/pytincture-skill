@@ -81,7 +81,7 @@ exact config fields — do not load them all.
 |---|---|
 | HTTP 422 opening the app | No entrypoint found. Add `APP_ENTRYPOINT = "ClassName"`. |
 | Page loads but no widgets / widgetset 404 | No wapyt wheel in `modules_path`, or a stale one. Re-run `dev_wheel.sh`, restart. |
-| Widgetset discovery finds nothing with `from wapyt import ...` | wapyt installed **editable** server-side. Add `widget.py` + `import widget`, or install non-editable. |
+| Widgetset discovery finds nothing with `from wapyt import ...` | Before pytincture 1.0.0rc13: wapyt installed **editable** server-side. Upgrade to rc13+, add `widget.py` + `import widget`, or install non-editable. |
 | UI renders twice | `__init__` calls `load_ui()` and so does the metaclass. Delete the `__init__`. |
 | Service refuses to start, mentions `@bff_policy` | Hook registered with `set_bff_policy_hook()` under `create_app()`. Use `BFF_POLICY_HOOK_PATH`. |
 | Data written by a BFF call is gone on the next call | State kept in a BFF module global; the module re-executes per call. Use storage. |

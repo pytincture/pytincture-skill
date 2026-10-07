@@ -21,9 +21,9 @@ python -m uvicorn service:app --port 8070   # then open http://127.0.0.1:8070/py
 ```
 
 `launch.py` runs the same app through the compatibility `launch_service()`
-with development email login (`pip install 'pytincture[password]'`, then
-`python launch.py`, sign in at `http://127.0.0.1:8070/py_ui` as
-`you@example.com` with any password).
+with development email login (`python launch.py`, sign in at
+`http://127.0.0.1:8070/py_ui` as `you@example.com` with any password; through
+pytincture 1.0.0rc12 it also needs `pip install 'pytincture[password]'`).
 
 `load_ui()` builds the widgets and returns; `_load_dataset()` then awaits
 `py_ui_data().dataset_async()` and fills the grid and the ratings chart. That
